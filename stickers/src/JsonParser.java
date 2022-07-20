@@ -10,12 +10,13 @@ public class JsonParser {
     //regex101.com
 
     private static final Pattern REGEX_ITEMS = Pattern.compile(".*\\[(.+)\\].*");
-    private static final Pattern REGEX_ATRIBUTOS_JSON = Pattern.compile("\"(.+?)\":\"(.+?)\"");
+    private static final Pattern REGEX_ATRIBUTOS_JSON = Pattern.compile("\"(.+?)\":\"(.*?)\"");
 
     public List<Map<String, String>> parse(String json) {
         Matcher matcher = REGEX_ITEMS.matcher(json);
         if (!matcher.find()) {
-            throw new IllegalArgumentException("Não encontrou Items");
+
+            throw new IllegalArgumentException("Não encontrou items.");
         }
 
         String[] items = matcher.group(1).split("\\},\\{");
@@ -23,6 +24,7 @@ public class JsonParser {
         List<Map<String, String>> dados = new ArrayList<>();
 
         for (String item : items) {
+
             Map<String, String> atributosItem = new HashMap<>();
 
             Matcher matcherAtributosJson = REGEX_ATRIBUTOS_JSON.matcher(item);
@@ -33,10 +35,9 @@ public class JsonParser {
             }
 
             dados.add(atributosItem);
-
         }
 
         return dados;
+    } 
 
-    }
 }
