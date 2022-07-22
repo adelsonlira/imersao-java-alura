@@ -35,9 +35,15 @@ public class App {
 
         var geradora = new GeradoraDeStickers();
 
-        for (Map<String, String> filme : listaDeFilmes) {
+       // for (Map<String, String> filme : listaDeFilmes) {
 
-            String urlImage = filme.get("image");
+        for (int i = 0; i< 10; i++) {
+
+            Map<String, String> filme = listaDeFilmes.get(i);
+
+            String urlImage = filme.get("image")
+                .replaceAll("(@+)(.*).jpg$", "$1.jpg");
+            
             String titulo = filme.get("title");
 
             InputStream inputStream = new URL(urlImage).openStream();
@@ -45,7 +51,7 @@ public class App {
 
             geradora.criar(inputStream, nomeArquivo);
 
-            System.out.println(titulo);
+            System.out.println(i+1+") "+titulo);
             System.out.println("-------------------------");
 
         }
