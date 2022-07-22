@@ -1,57 +1,43 @@
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
-import java.util.Map;
 
 public class App {
     public static void main(String[] args) throws Exception {
 
-        // fazer conexao HTTP e buscar os top 250 filmes
-        //String url = "https://imdb-api.com/en/API/Top250Movies/k_32lkarv1";
+        // url e chama extrator para os top 250 filmes
+        // String url = "https://imdb-api.com/en/API/Top250Movies/k_32lkarv1";
+        // String url = "https://alura-imdb-api.herokuapp.com/movies";
+        // var extrator = new ExtratorDeConteudoDoIMDB();
 
-        String url = "https://alura-imdb-api.herokuapp.com/movies";
+        // url e chama extrator para imagens da Nasa
+        String url = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&start_date=2022-06-12&end_date=2022-06-14";
+        var extrator = new ExtratorDeConteudoDaNasa();
 
-        URI endereco = new URI(url);
+        var http = new ClienteHttp();
+        String json = http.buscaDados(url);
 
-        var client = HttpClient.newHttpClient();
+        // exibir e manipular os dados dos conteudo
 
-        var request = HttpRequest.newBuilder(endereco).GET().build();
-
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-
-        String body = response.body();
-
-        // extrair os dados dos filmes (titulo, poster, classificação e ano)
-        JsonParser parser = new JsonParser();
-
-        List<Map<String, String>> listaDeFilmes = parser.parse(body);
-
-        // exibir e manipular os dados dos filmes
+        extrator.extraiConteudos(json);
+        List<Conteudo> conteudos = extrator.extraiConteudos(json);
 
         var geradora = new GeradoraDeStickers();
 
-       // for (Map<String, String> filme : listaDeFilmes) {
+        // for (Map<String, String> conteudo : listaDeConteudos) {
 
-        for (int i = 0; i< 10; i++) {
+        for (int i = 0; i < 3; i++) {
 
-            Map<String, String> filme = listaDeFilmes.get(i);
+            Conteudo conteudo = conteudos.get(i);
 
-            String urlImage = filme.get("image")
-                .replaceAll("(@+)(.*).jpg$", "$1.jpg");
-            
-            String titulo = filme.get("title");
+            String titulo = conteudo.getTitulo();
 
-            InputStream inputStream = new URL(urlImage).openStream();
+            InputStream inputStream = new URL(conteudo.getUrlImage()).openStream();
             String nomeArquivo = titulo + ".png";
 
             geradora.criar(inputStream, nomeArquivo);
 
-            System.out.println(i+1+") "+titulo);
+            System.out.println(i + 1 + ") " + titulo);
             System.out.println("-------------------------");
 
         }
